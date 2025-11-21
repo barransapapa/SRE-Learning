@@ -1,15 +1,23 @@
 import requests
+from datetime import date
 from flask import Flask, request
 
+# This is a simple Flask web application that provides an endpoint to retrieve data about asteroids from NASA's NeoWs API.
+# Initialize Flask app
 app = Flask(__name__)
 @app.route('/') #These are the paths on the link
 def hello_world():
-    return 'Hello, World!'
+    return 'Please go to the /asteroids endpoint to see data about asteroids from NASA NeoWs API.'
 
-@app.get('/asteroids') #http://127.0.0.1:5000/asteroids
+
+#This endpoint retrieves data about asteroids from NASA's NeoWs API
+@app.get('/asteroids') #http://127.0.0.1:8000/asteroids
 def get_asteroids():
+    #Get today's date in YYYY-MM-DD format
+    search_date=date.today().strftime("%Y-%m-%d")
+    # You can get your own API key by registering at https://api.nasa.gov/. Once you have registered, replace <API_Key> with your actual key, and remove the comment tag at the beginning of the line.
     #api_key = "<API_Key>"
-    url = f"https://api.nasa.gov/neo/rest/v1/feed?start_date=2025-09-12&end_date=2025-09-12&api_key={api_key}"
+    url = f"https://api.nasa.gov/neo/rest/v1/feed?start_date={search_date}&end_date={search_date}&api_key={api_key}"
     response = requests.get(url)
     data = response.json()
     return {"data": data}
