@@ -8,7 +8,7 @@ from os import getenv
 app = Flask(__name__)
 @app.route('/') #These are the paths on the link
 def go_to_asteroids():
-    return 'Please go to the /asteroids endpoint to see data about asteroids from NASA NeoWs API.'+ 'test'
+    return 'Please go to the /asteroids endpoint to see data about asteroids from NASA NeoWs API.'
 
 
 #This endpoint retrieves data about asteroids from NASA's NeoWs API
