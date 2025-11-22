@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nasa-app
+  namespace: nasa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nasa-app
+  template:
+    metadata:
+      labels:
+        app: nasa-app
+    spec:
+      containers:
+        - name: nasa-app
+          image: barransapapa/nasa-app:latest
+          env:
+            - name: NASA_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nasa-api-key
+                  key: apiKey
+          ports:
+            - containerPort: 5000
