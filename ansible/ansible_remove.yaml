@@ -1,0 +1,59 @@
+---
+- name: Remove Prometheus Deployment
+  hosts: all
+  tasks:
+    - name: Delete Prometheus Namespace
+      k8s:
+        state: absent
+        kind: Namespace
+        name: monitoring
+    - name: Ensure Prometheus Deployment is Removed
+      k8s:
+        state: absent
+        kind: Deployment
+        namespace: monitoring
+        name: prometheus-deployment
+    - name: Ensure Prometheus Service is Removed
+      k8s:
+        state: absent
+        kind: Service
+        namespace: monitoring
+        name: prometheus-service
+    - name: Ensure Prometheus ConfigMap is Removed
+      k8s:
+        state: absent
+        kind: ConfigMap
+        namespace: monitoring
+        name: prometheus-config
+- name: Remove nasa-app Deployment
+  hosts: all
+  tasks:
+    - name: Delete nasa Namespace
+      k8s:
+        state: absent
+        kind: Namespace
+        name: nasa
+    - name: Ensure nasa-app Deployment is Removed
+      k8s:
+        state: absent
+        kind: Deployment
+        namespace: nasa
+        name: nasa-app
+    - name: Ensure nasa-app-service is Removed
+      k8s:
+        state: absent
+        kind: Service
+        namespace: nasa
+        name: nasa-app-service
+    - name: Ensure nasa-app ConfigMap is Removed
+      k8s:
+        state: absent
+        kind: secret
+        namespace: nasa
+        name: nasa-api-key 
+- name: Pause for resources to be deleted
+  hosts: all
+  tasks:
+    - name: Wait for 30 seconds
+      pause:
+        seconds: 30

@@ -8,7 +8,10 @@ echo -n "Enter your NASA API key to build the app environment: "
 read -s apiKey
 echo
 # Apply Kubernetes configurations
-kubectl apply -f ../k8s/nasa_namespace.yaml
+#kubectl apply -f ../k8s/nasa_namespace.yaml
+ansible-playbook -i ../ansible/inventory.ini ../ansible/ansible_remove.yaml
+ansible-playbook -i ../ansible/inventory.ini ../ansible/ansible_nasa_namespace.yaml
 kubectl create secret generic nasa-api-key --from-literal=apiKey=$apiKey -n nasa
-kubectl apply -f ../k8s/deployment.yaml
-kubectl apply -f ../k8s/service.yaml
+ansible-playbook -i ../ansible/inventory.ini ../ansible/ansible_deploy.yaml
+# Notify the user of completion
+echo "Nasa app environment build complete."

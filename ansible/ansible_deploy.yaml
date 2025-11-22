@@ -1,0 +1,22 @@
+---
+# Deploy Prometheus deployment
+- name: Deploy Prometheus to Kubernetes
+  hosts: all
+  tasks:
+    - name: Apply Prometheus Kubernetes manifests
+      command: kubectl apply -f prometheus.yaml
+      args:
+        chdir: ../k8s/
+
+# Deploy nasa-app deployment and service
+- name: Deploy nasa-app to Kubernetes
+  hosts: all
+  tasks:
+    - name: Apply nasa-app-service Kubernetes manifests
+      command: kubectl apply -f service.yaml
+      args:
+        chdir: ../k8s/
+    - name: Apply nasa-app deployment Kubernetes manifests
+      command: kubectl apply -f deployment.yaml
+      args:
+        chdir: ../k8s/
