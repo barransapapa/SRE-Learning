@@ -6,7 +6,7 @@ from getpass import getpass
 # This is a simple Flask web application that provides an endpoint to retrieve data about asteroids from NASA's NeoWs API.
 # Initialize Flask app
 app = Flask(__name__)
-# The line below prompts the user to enter their NASA API key securely. You can get your own API key by registering at https://api.nasa.gov/. Once you have registered, replace <API_Key> with your actual key, and remove the comment tag at the beginning of the line
+# The line below prompts the user to enter their NASA API key securely. You can get your own API key by registering at https://api.nasa.gov/.
 api_key = getpass("Enter your NASA API Key: ")
 @app.route('/') #These are the paths on the link
 def hello_world():
@@ -26,7 +26,7 @@ def get_asteroids():
     
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=8000)
+    app.run(host='0.0.0.0',port=5000)
 
 # Reference: https://apidog.com/es/blog/how-to-use-nasa-api-3/#servicio-web-de-objetos-cercanos-a-la-tierra-neows
 # for date, asteroids in data ["near_earth_objects"].items():
