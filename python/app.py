@@ -1,11 +1,37 @@
 import requests
+import random
+import time
 from datetime import date
 from flask import Flask
 from os import getenv
+from opentelemetry import trace
+from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
+from opentelemetry.instrumentation.flask import FlaskInstrumentor
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.instrumentation.wsgi import OpenTelemetryMiddleware
+
+# Set up OpenTelemetry tracing with my service name
+resource = Resource(attributes={"service.name": "nasa-app-service"})
+
+span_exporter = OTLPSpanExporter(endpoint="otel-collector.opentelemetry.svc.cluster.local:4317", insecure=True)
+
+tracer_provider = TracerProvider(resource=resource)
+span_processor = BatchSpanProcessor(span_exporter)
+tracer_provider.add_span_processor(span_processor)
+trace.set_tracer_provider(tracer_provider)
+
+tracer = trace.get_tracer(__name__)
 
 # This is a simple Flask web application that provides an endpoint to retrieve data about asteroids from NASA's NeoWs API.
 # Initialize Flask app
 app = Flask(__name__)
+
+
+FlaskInstrumentor().instrument_app(app)
+app.wsgi_app = OpenTelemetryMiddleware(app.wsgi_app)
+
 @app.route('/') #These are the paths on the link
 def go_to_asteroids():
     return 'Please go to the /asteroids endpoint to see data about asteroids from NASA NeoWs API.'
