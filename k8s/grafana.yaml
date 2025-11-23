@@ -106,11 +106,24 @@ data:
           "targets": [
             {
               "expr": "sum by(job) (rate(process_cpu_seconds_total[5m]))",
-              "redId": "A"
+              "refId": "A"
             }
           ],
           "title": "CPU Usage",
           "type": "graph"
+        },
+        {
+          "datasource": "Prometheus",
+          "id": 2,
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "targets": [
+            {
+              "expr": "sum(rate(container_cpu_usage_seconds_total[5m])) by (container_label_io_kubernetes_pod_name)",
+              "refId": "B"
+            }
+          ],
+          "title": "Pod CPU Usage",
+          type: "graph"
         }
       ],
       "schemaVersion": 16,
