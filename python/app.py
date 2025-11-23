@@ -12,6 +12,19 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.wsgi import OpenTelemetryMiddleware
 
+import logging
+from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
+from opentelemetry._logs import set_logger_provider
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs.export import BatchLogProcessor
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(filename='./logs/sre-app.log', encoding='utf-8', level=logging.DEBUG)
+logger.debug('This message should go to the log file with debug level')
+logger.info('This message should go to the log file with info level')
+logger.warning('This message should go to the log file with warning level')
+logger.error('This message should go to the log file with error level')
+
 # Set up OpenTelemetry tracing with my service name
 resource = Resource(attributes={"service.name": "nasa-app-service"})
 
@@ -23,6 +36,14 @@ tracer_provider.add_span_processor(span_processor)
 trace.set_tracer_provider(tracer_provider)
 
 tracer = trace.get_tracer(__name__)
+
+logger_provider = LoggerProvider()
+set_logger_provider(logger_provider)
+log_exporter = OTLPLogExporter(endpoint="otel-collector.opentelemetry.svc.cluster.local:4317", insecure=True)
+log_processor = BatchLogRecordProcessor(log_exporter)
+logger_provider.add_log_record_processor(log_processor)
+otel_handler = LoggingHandler(logger_provider=logger_provider)
+logging.getLogger().addHandler(otel_handler)
 
 # This is a simple Flask web application that provides an endpoint to retrieve data about asteroids from NASA's NeoWs API.
 # Initialize Flask app
