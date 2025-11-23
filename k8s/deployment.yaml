@@ -24,3 +24,25 @@ spec:
                   key: apiKey
           ports:
             - containerPort: 5000
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: asteroids-cronjob
+  namespace: nasa
+spec:
+  schedule: "*/3 * * * *"  # Runs every two minutes
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: fetch-asteroids
+            image: curlimages/curl:7.85.0
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                curl http://nasa-app-service.nasa.svc.cluster.local:5000/asteroids
+          restartPolicy: Never

@@ -4,9 +4,12 @@
   hosts: all
   tasks:
     - name: Apply Prometheus Kubernetes manifests
-      command: kubectl apply -f prometheus.yaml
+      command: kubectl apply -f prometheus.yaml --validate=false
       args:
         chdir: ../k8s/
+    # Check that Prometheus pod is running
+    - name: Verify Prometheus Pod is Running  
+      ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=prometheus -n monitoring --timeout=300s
 
 # Deploy nasa-app deployment and service
 - name: Deploy nasa-app to Kubernetes
@@ -20,3 +23,42 @@
       command: kubectl apply -f deployment.yaml
       args:
         chdir: ../k8s/
+    # Check that nasa-app pod is running
+    - name: Verify nasa-app Pod is Running
+      ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=nasa-app -n nasa --timeout=300s
+
+# Deploy grafana deployment, service and configmaps
+- name: Deploy Grafana to Kubernetes
+  hosts: all
+  tasks:
+    - name: Apply Grafana Kubernetes manifests
+      command: kubectl apply -f grafana.yaml --validate=false
+      args:
+        chdir: ../k8s/
+    # Check that Grafana pod is running
+    - name: Verify Grafana Pod is Running
+      ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=grafana -n monitoring --timeout=300s
+
+# Deploy OpenTelemetry Collector deployment, service and configmap
+- name: Deploy OpenTelemetry Collector to Kubernetes
+  hosts: all
+  tasks:
+    - name: Apply OpenTelemetry Collector Kubernetes manifests
+      command: kubectl apply -f otel-collector.yaml --validate=false
+      args:
+        chdir: ../k8s/
+    # Check that OtelCollector pod is running
+    - name: Verify OpenTelemetry Collector Pod is Running
+      ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=otel-collector -n opentelemetry --timeout=300s
+
+# Deploy Jaeger deployment and services
+- name: Deploy Jaeger to Kubernetes
+  hosts: all
+  tasks:
+    - name: Apply Jaeger Kubernetes manifests
+      command: kubectl apply -f jaeger.yaml --validate=false
+      args:
+        chdir: ../k8s/
+    # Check that Jaeger pod is running
+    - name: Verify Jaeger Pod is Running
+      ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=jaeger -n opentelemetry --timeout=300s

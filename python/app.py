@@ -38,7 +38,7 @@ def go_to_asteroids():
 
 
 #This endpoint retrieves data about asteroids from NASA's NeoWs API
-@app.get('/asteroids') #http://127.0.0.1:8000/asteroids
+@app.get('/asteroids') #http://127.0.0.1:5000/asteroids
 def get_asteroids():
     #Get today's date in YYYY-MM-DD format
     search_date=date.today().strftime("%Y-%m-%d")
@@ -48,7 +48,8 @@ def get_asteroids():
     url = f"https://api.nasa.gov/neo/rest/v1/feed?start_date={search_date}&end_date={search_date}&api_key={api_key}"
     response = requests.get(url)
     data = response.json()
-    return {"data": data}
+    with tracer.start_as_current_span("process_asteroid_data"):
+        return {"data": data}
     
 
 if __name__ == '__main__':

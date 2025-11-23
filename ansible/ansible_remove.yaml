@@ -13,6 +13,7 @@
         kind: Deployment
         namespace: monitoring
         name: prometheus-deployment
+        force: true
     - name: Ensure Prometheus Service is Removed
       k8s:
         state: absent
@@ -51,6 +52,38 @@
         kind: secret
         namespace: nasa
         name: nasa-api-key 
+- name: Remove OpenTelemetry Collector Deployment
+  hosts: all
+  tasks:
+    - name: Ensure otel-collector Deployment is Removed
+      k8s:
+        state: absent
+        kind: Deployment
+        namespace: opentelemetry
+        name: otel-collector
+    - name: Ensure otel-collector ConfigMap is Removed
+      k8s:
+        state: absent
+        kind: ConfigMap
+        namespace: opentelemetry
+        name: otel-config
+    - name: Remove Jaeger Deployment
+      k8s:
+        state: absent
+        kind: Deployment
+        namespace: opentelemetry
+        name: jaeger
+    - name: Ensure jaeger Services are Removed
+      k8s:
+        state: absent
+        kind: Service
+        namespace: opentelemetry
+        name: jaeger
+    - name: Delete OpenTelemetry Namespace
+      k8s:
+        state: absent
+        kind: Namespace
+        name: opentelemetry
 - name: Pause for resources to be deleted
   hosts: all
   tasks:
