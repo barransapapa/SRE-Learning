@@ -2,7 +2,7 @@ import requests
 import random
 import time
 from datetime import date
-from flask import Flask
+from flask import Flask, Response
 from os import getenv
 from opentelemetry import trace
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
