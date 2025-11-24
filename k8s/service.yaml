@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: nasa-app-service
   namespace: nasa
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "5000"
+    prometheus.io/path: "/metrics"
 spec:
   type: NodePort
   selector:

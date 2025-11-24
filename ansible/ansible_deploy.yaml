@@ -1,15 +1,12 @@
 ---
-# Deploy Prometheus deployment
-- name: Deploy Prometheus to Kubernetes
+# Deploy storage classes and persistent volumes
+- name: Deploy Storage Classes and Persistent Volumes to Kubernetes
   hosts: all
   tasks:
-    - name: Apply Prometheus Kubernetes manifests
-      command: kubectl apply -f prometheus.yaml --validate=false
+    - name: Apply Storage Kubernetes manifests
+      command: kubectl apply -f storage.yaml
       args:
         chdir: ../k8s/
-    # Check that Prometheus pod is running
-    - name: Verify Prometheus Pod is Running  
-      ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=prometheus -n monitoring --timeout=300s
 
 # Deploy nasa-app deployment and service
 - name: Deploy nasa-app to Kubernetes
@@ -26,18 +23,6 @@
     # Check that nasa-app pod is running
     - name: Verify nasa-app Pod is Running
       ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=nasa-app -n nasa --timeout=300s
-
-# Deploy grafana deployment, service and configmaps
-- name: Deploy Grafana to Kubernetes
-  hosts: all
-  tasks:
-    - name: Apply Grafana Kubernetes manifests
-      command: kubectl apply -f grafana.yaml --validate=false
-      args:
-        chdir: ../k8s/
-    # Check that Grafana pod is running
-    - name: Verify Grafana Pod is Running
-      ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=grafana -n monitoring --timeout=300s
 
 # Deploy OpenTelemetry Collector deployment, service and configmap
 - name: Deploy OpenTelemetry Collector to Kubernetes
@@ -62,3 +47,45 @@
     # Check that Jaeger pod is running
     - name: Verify Jaeger Pod is Running
       ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=jaeger -n opentelemetry --timeout=300s
+
+# Deploy Prometheus rbac clusterrole and clusterrolebinding
+- name: Deploy Prometheus RBAC to Kubernetes
+  hosts: all
+  tasks:
+    - name: Apply Prometheus RBAC Kubernetes manifests
+      command: kubectl apply -f prometheus-rbac.yaml --validate=false
+      args:
+        chdir: ../k8s/
+
+# Deploy Prometheus deployment
+- name: Deploy Prometheus to Kubernetes
+  hosts: all
+  tasks:
+    - name: Apply Prometheus Kubernetes manifests
+      command: kubectl apply -f prometheus.yaml --validate=false
+      args:
+        chdir: ../k8s/
+    # Check that Prometheus pod is running
+    - name: Verify Prometheus Pod is Running  
+      ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=prometheus -n monitoring --timeout=300s
+
+# Deploy Loki deployment, service and configmap
+- name: Deploy Loki to Kubernetes
+  hosts: all
+  tasks:
+    - name: Apply Loki Kubernetes manifests
+      command: kubectl apply -f grafana-loki.yaml --validate=false
+      args:
+        chdir: ../k8s/
+
+# Deploy grafana deployment, service and configmaps
+- name: Deploy Grafana to Kubernetes
+  hosts: all
+  tasks:
+    - name: Apply Grafana Kubernetes manifests
+      command: kubectl apply -f grafana.yaml --validate=false
+      args:
+        chdir: ../k8s/
+    # Check that Grafana pod is running
+    - name: Verify Grafana Pod is Running
+      ansible.builtin.command: kubectl wait --for=condition=ready pod -l app=grafana -n monitoring --timeout=300s

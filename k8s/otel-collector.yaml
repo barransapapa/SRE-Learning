@@ -32,6 +32,10 @@ spec:
     metadata:
       labels:
         app: otel-collector
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9464"
+        prometheus.io/path: "/metrics"
     spec:
       containers:
         - name: otel-collector
@@ -40,7 +44,7 @@ spec:
             - "--config=/etc/otel-collector-config.yaml"
           ports:
             - containerPort: 4317   # OTLP gRPC
-            #- containerPort: 9464   # Prometheus metrics exposed
+            - containerPort: 9464   # Prometheus metrics exposed
           volumeMounts:
             - name: otel-config
               mountPath: /etc/otel-collector-config.yaml
@@ -114,8 +118,10 @@ kind: Service
 metadata:
   name: otel-collector
   namespace: opentelemetry
-  labels:
-    app: otel-collector
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9464"
+    prometheus.io/path: "/metrics"
 spec:
   type: ClusterIP
   selector:

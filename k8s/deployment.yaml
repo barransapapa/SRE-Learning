@@ -12,6 +12,10 @@ spec:
     metadata:
       labels:
         app: nasa-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "5000" 
+        prometheus.io/path: "/metrics"
     spec:
       containers:
         - name: nasa-app
@@ -33,9 +37,12 @@ spec:
           ports:
             - containerPort: 5000
           volumeMounts:
-            - name: log-volumeMounts
-              persistentVolumeClaim:
-                claimName: log-persistentVolumeClaim
+            - name: log-volume
+              mountPath: /app/logs
+      volumes:
+        - name: log-volume
+          persistentVolumeClaim:
+            claimName: log-pvc
 ---
 apiVersion: v1
 kind: persistentVolumeClaim
@@ -57,7 +64,7 @@ metadata:
   name: asteroids-cronjob
   namespace: nasa
 spec:
-  schedule: "*/1 * * * *"  # Runs every two minutes
+  schedule: "*/2 * * * *"  # Runs every two minutes
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 1
   jobTemplate:
