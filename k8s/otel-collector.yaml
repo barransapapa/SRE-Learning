@@ -5,7 +5,7 @@ metadata:
   name: opentelemetry
 ---
 apiVersion: v1
-kind: persistentVolumeClaim
+kind: PersistentVolumeClaim
 metadata:
   name: log-pvc
   namespace: opentelemetry

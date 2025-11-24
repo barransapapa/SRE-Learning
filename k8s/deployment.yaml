@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,22 +21,22 @@ spec:
       containers:
         - name: nasa-app
           image: barransapapa/nasa-app:latest
+          ports:
+          - containerPort: 5000
           env:
             - name: NASA_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: nasa-api-key
                   key: apiKey
-            - name: OTEL_EXPORTER_OTLP_ENDPOINT
-              value: "otel-collector.opentelemetry.svc.cluster.local:4317"
-            - name: OTEL_RESOURCE_ATTRIBUTES
-              value: "service.name=nasa-app"
-            - name: OTEL_METRICS_EXPORTER
-              value: "otlp"
-            - name: OTEL_TRACES_EXPORTER
-              value: "otlp"
-          ports:
-            - containerPort: 5000
+            # - name: OTEL_EXPORTER_OTLP_ENDPOINT
+            #   value: "otel-collector.opentelemetry.svc.cluster.local:4317"
+            # - name: OTEL_RESOURCE_ATTRIBUTES
+            #   value: "service.name=nasa-app"
+            # - name: OTEL_METRICS_EXPORTER
+            #   value: "otlp"
+            # - name: OTEL_TRACES_EXPORTER
+            #   value: "otlp"          
           volumeMounts:
             - name: log-volume
               mountPath: /app/logs
@@ -43,9 +44,10 @@ spec:
         - name: log-volume
           persistentVolumeClaim:
             claimName: log-pvc
+              #namespace: nasa
 ---
 apiVersion: v1
-kind: persistentVolumeClaim
+kind: PersistentVolumeClaim
 metadata:
   name: log-pvc
   namespace: nasa
@@ -56,7 +58,7 @@ spec:
     requests:
       storage: 3Gi
   storageClassName: ""
-  volumeName: log-pv-1              
+  volumeName: log-pv-1
 ---
 apiVersion: batch/v1
 kind: CronJob

@@ -53,7 +53,7 @@
   hosts: all
   tasks:
     - name: Apply Prometheus RBAC Kubernetes manifests
-      command: kubectl apply -f prometheus-rbac.yaml --validate=false
+      command: kubectl apply -f prometheus-rbac-cluster.yaml --validate=false
       args:
         chdir: ../k8s/
 
