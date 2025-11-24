@@ -99,11 +99,11 @@ data:
         disableDeletion: false
         options:
           path: /etc/grafana/provisioning/dashboards
-  example-dashboard.json: |
+  app-dashboard.json: |
     {
       "id": null,
-      "uid": "example-dashboard",
-      "title": "Example Dashboard",
+      "uid": "app-dashboard",
+      "title": "App Dashboard",
       "tags": [],
       "style": "dark",
       "timezone": "browser",
@@ -136,29 +136,16 @@ data:
           "type": "graph"
         },
         {
-          "datasource": "Prometheus",
+          "datasource": "Loki",
           "id": 3,
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
           "targets": [
             {
-              "expr": "rate(otel_collector_span_metrics_calls_total{span_name=\"goo\", status_code=\"STATUS_CODE_ERROR\"}[5m])",
+              "expr": "{service_name=\"nasa-app\"} |= `error`",
               "refId": "C"
             }
           ],
-          "title": "goo application errors",
-          "type": "graph"
-        },
-        {
-          "datasource": "Loki",
-          "id": 4,
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
-          "targets": [
-            {
-              "expr": "{service_name=\"unknown_service\"} |= `goo encountered an error:`",
-              "refId": "D"
-            }
-          ],
-          "title": "Error Occurrences for Unknown Service",
+          "title": "Error Logs for NASA App",
           "type": "logs"
         }
       ],
@@ -372,7 +359,7 @@ data:
                     },
                     {
                         "uid": "a01dac3xmsav4b",
-                        "title": "Receive bytes lower than 250000 bytes",
+                        "title": "Receive bytes lower than 1 bytes",
                         "condition": "C",
                         "data": [
                             {
@@ -405,7 +392,7 @@ data:
                                         {
                                             "evaluator": {
                                                 "params": [
-                                                    250000
+                                                    1
                                                 ],
                                                 "type": "gt"
                                             },
@@ -444,7 +431,7 @@ data:
                     },
                     {
                       "uid": "ce2e4jo7pf5s0f",
-                      "title": "Availability must have less than 5500 errors",
+                      "title": "Availability must have less than 2 errors",
                       "condition": "C",
                       "data": [
                           {
@@ -461,7 +448,7 @@ data:
                                       "uid": "P8E80F9AEF21F6940"
                                   },
                                   "editorMode": "code",
-                                  "expr": "sum(count_over_time({service_name=\"unknown_service\"} |= \"err\" [5m]))  by(service_name) ",
+                                  "expr": "sum(count_over_time({service_name=\"nasa-app-service\"} |= \"err\" [5m]))  by(service_name) ",
                                   "intervalMs": 1000,
                                   "maxDataPoints": 43200,
                                   "queryType": "range",
@@ -524,7 +511,7 @@ data:
                                       {
                                           "evaluator": {
                                               "params": [
-                                                  5500
+                                                  2
                                               ],
                                               "type": "gt"
                                           },
