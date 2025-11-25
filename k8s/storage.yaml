@@ -1,3 +1,4 @@
+# Kubernetes PersistentVolume configuration for NASA App logs
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -12,6 +13,7 @@ spec:
     type: DirectoryOrCreate
   storageClassName: ""
 ---
+# Kubernetes PersistentVolume configuration for OpenTelemetry Collector logs
 apiVersion: v1
 kind: PersistentVolume
 metadata:

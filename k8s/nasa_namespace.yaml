@@ -1,3 +1,4 @@
+# Kubernetes Namespace configuration for NASA app
 apiVersion: v1
 kind: Namespace
 metadata:

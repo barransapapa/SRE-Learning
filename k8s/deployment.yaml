@@ -1,4 +1,5 @@
 ---
+# Kubernetes Deployment for NASA App with Persistent Volume and CronJob
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,15 +29,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: nasa-api-key
-                  key: apiKey
-            # - name: OTEL_EXPORTER_OTLP_ENDPOINT
-            #   value: "otel-collector.opentelemetry.svc.cluster.local:4317"
-            # - name: OTEL_RESOURCE_ATTRIBUTES
-            #   value: "service.name=nasa-app"
-            # - name: OTEL_METRICS_EXPORTER
-            #   value: "otlp"
-            # - name: OTEL_TRACES_EXPORTER
-            #   value: "otlp"          
+                  key: apiKey         
           volumeMounts:
             - name: log-volume
               mountPath: /app/logs
@@ -44,8 +37,8 @@ spec:
         - name: log-volume
           persistentVolumeClaim:
             claimName: log-pvc
-              #namespace: nasa
 ---
+# Persistent Volume Claim for NASA App logs
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -60,6 +53,7 @@ spec:
   storageClassName: ""
   volumeName: log-pv-1
 ---
+# CronJob to fetch asteroid data every two minutes
 apiVersion: batch/v1
 kind: CronJob
 metadata:

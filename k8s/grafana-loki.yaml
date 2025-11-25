@@ -1,3 +1,4 @@
+# Grafana Loki deployment configuration
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -45,6 +46,7 @@ data:
       enable_api: true
 
 ---
+# Grafana Loki Deployment configuration
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -76,6 +78,7 @@ spec:
           configMap:
             name: loki-config
 ---
+# Grafana Loki Service configuration
 apiVersion: v1
 kind: Service
 metadata:

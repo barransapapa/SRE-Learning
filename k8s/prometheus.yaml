@@ -1,16 +1,19 @@
+# Prometheus Namespace configuration
 apiVersion: v1
 kind: Namespace
 metadata:
   name: monitoring
 
 ---
+# ServiceAccount for Prometheus in monitoring namespace
 apiVersion: v1
-kind: ServiceAccount # ServiceAccount for Prometheus
+kind: ServiceAccount 
 metadata:
   name: prometheus
   namespace: monitoring
 
 ---
+# ConfigMap for Prometheus configuration and scrape jobs
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -135,6 +138,7 @@ data:
             target_label: kubernetes_service_name
 
 ---
+# Prometheus Deployment and Service configuration
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -152,13 +156,13 @@ spec:
       labels:
         app: prometheus
     spec:
-      serviceAccountName: prometheus # Use the dedicated service account
+      serviceAccountName: prometheus
       containers:
         - name: prometheus
           image: prom/prometheus:latest
           args:
             - "--config.file=/etc/prometheus/prometheus.yml"
-            - "--storage.tsdb.retention.time=10d" # Example: keep data for 10 days
+            - "--storage.tsdb.retention.time=10d"
             - "--web.enable-lifecycle"
           ports:
             - containerPort: 9090
@@ -171,13 +175,11 @@ spec:
         - name: prometheus-config-volume
           configMap:
             name: prometheus-config
-        - name: prometheus-storage # Persistent Storage (using emptyDir for simplicity, consider PVC for persistence)
+        - name: prometheus-storage
           emptyDir: {}
-          # For production, you would typically use a PersistentVolumeClaim here:
-          # persistentVolumeClaim:
-          #   claimName: prometheus-pvc # You'd need to define this PVC in a separate file
 
 ---
+# Prometheus Service configuration for accessing Prometheus UI
 apiVersion: v1
 kind: Service
 metadata:

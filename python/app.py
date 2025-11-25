@@ -11,14 +11,17 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.instrumentation.wsgi import OpenTelemetryMiddleware
 
+# Prometheus client imports
 from prometheus_client import generate_latest, Counter, Histogram, Gauge
 
+# Logging imports
 import logging
 from opentelemetry.exporter.otlp.proto.grpc._log_exporter import OTLPLogExporter
 from opentelemetry._logs import set_logger_provider
 from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 
+# Set up logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(filename='./logs/sre-app.log', encoding='utf-8', level=logging.DEBUG)
 logger.debug('This message should go to the log file with debug level')
@@ -27,18 +30,21 @@ logger.warning('This message should go to the log file with warning level')
 logger.error('This message should go to the log file with error level')
 
 # Set up OpenTelemetry tracing with my service name
-#resource = Resource(attributes={"service.name": "nasa-app-service"})
 resource = Resource.create({"service.name": "nasa-app-service"})
 
+# Configure OTLP exporter to send data to the OpenTelemetry Collector
 span_exporter = OTLPSpanExporter(endpoint="otel-collector.opentelemetry.svc.cluster.local:4317", insecure=True)
 
+# Set up Tracer Provider and add Span Processor
 tracer_provider = TracerProvider(resource=resource)
 span_processor = BatchSpanProcessor(span_exporter)
 tracer_provider.add_span_processor(span_processor)
 trace.set_tracer_provider(tracer_provider)
 
+# Get a tracer
 tracer = trace.get_tracer(__name__)
 
+# Set up OpenTelemetry logging
 logger_provider = LoggerProvider()
 set_logger_provider(logger_provider)
 log_exporter = OTLPLogExporter(endpoint="otel-collector.opentelemetry.svc.cluster.local:4317", insecure=True)
@@ -51,7 +57,7 @@ logging.getLogger().addHandler(otel_handler)
 # Initialize Flask app
 app = Flask(__name__)
 
-
+# Instrument Flask app with OpenTelemetry
 FlaskInstrumentor().instrument_app(app)
 app.wsgi_app = OpenTelemetryMiddleware(app.wsgi_app)
 
@@ -73,6 +79,7 @@ def get_asteroids():
     api_key = getenv("NASA_API_KEY")
     #Make a GET request to the NASA NeoWs API to retrieve asteroid data for the specified date
     start_timer = time.time()
+    # Increment Prometheus metrics for request count and latency
     REQUEST_COUNT.labels(method='GET', endpoint='/asteroids').inc()
     url = f"https://api.nasa.gov/neo/rest/v1/feed?start_date={search_date}&end_date={search_date}&api_key={api_key}"
     latency = time.time() - start_timer
@@ -81,7 +88,8 @@ def get_asteroids():
     data = response.json()
     with tracer.start_as_current_span("process_asteroid_data"):
         return {"data": data}
-    
+
+# Prometheus metrics endpoint    
 @app.route('/metrics')
 def metrics():
     return Response(generate_latest(), mimetype='text/plain')

@@ -1,3 +1,4 @@
+# Kubernetes configuration for Grafana deployment with datasources, dashboards, and alerts
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -41,6 +42,7 @@ spec:
           configMap:
             name: grafana-alerts-config
 ---
+# Grafana Service configuration
 apiVersion: v1
 kind: Service
 metadata:
@@ -57,6 +59,7 @@ spec:
       targetPort: 3000
   type: NodePort
 ---
+# ConfigMap for Grafana Datasources configuration
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -81,6 +84,7 @@ data:
         isDefault: false
         editable: true
 ---
+# ConfigMap for Grafana Dashboards configuration and alerts
 apiVersion: v1
 kind: ConfigMap
 metadata:

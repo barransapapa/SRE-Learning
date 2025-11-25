@@ -1,5 +1,6 @@
-apiVersion: rbac.authorization.k8s.io/v1
+# RBAC configuration for Prometheus to access cluster resources
 kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: prometheus
 rules:
@@ -21,6 +22,7 @@ rules:
   verbs: ["get"]
 
 ---
+# ClusterRoleBinding to bind Prometheus ClusterRole to Prometheus ServiceAccount
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:

@@ -1,4 +1,5 @@
 ---
+# Kubernetes configuration for Jaeger deployment in OpenTelemetry namespace
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,6 +25,7 @@ spec:
             - containerPort: 14250  # Jaeger Collector Thrift
           args: ["--collector.otlp.enabled=true"] # Enable OTLP gRPC receiver
 ---
+# Jaeger Service configuration
 apiVersion: v1
 kind: Service
 metadata:
@@ -47,6 +49,7 @@ spec:
       targetPort: 4317
       protocol: TCP
 ---
+# Jaeger Service for UI access
 apiVersion: v1
 kind: Service
 metadata:

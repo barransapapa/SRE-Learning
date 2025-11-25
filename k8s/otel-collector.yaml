@@ -1,9 +1,11 @@
 ---
+# Kubernetes configuration for OpenTelemetry Collector deployment with log collection
 apiVersion: v1
 kind: Namespace
 metadata:
   name: opentelemetry
 ---
+# PersistentVolumeClaim for log storage in OpenTelemetry namespace
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -18,6 +20,7 @@ spec:
   storageClassName: ""
   volumeName: log-pv-2
 ---
+# OpenTelemetry Collector Deployment configuration
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -59,6 +62,7 @@ spec:
           persistentVolumeClaim:
             claimName: log-pvc
 ---
+# ConfigMap for OpenTelemetry Collector configuration
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -74,12 +78,6 @@ data:
       filelog:
         include: ["/var/log/nasa-app/*.log"]
         start_at: beginning
-      # prometheus:
-      #   config:
-      #     scrape_configs:
-      #       - job_name: 'otel-collector-metrics'
-      #         static_configs:
-      #           - targets: ['0.0.0.0:8888']
     exporters:
       otlp/jaeger:
         endpoint: "jaeger:4317"
@@ -113,6 +111,7 @@ data:
                 processors: [batch]
                 exporters: [prometheus]
 ---
+# OpenTelemetry Collector Service configuration
 apiVersion: v1
 kind: Service
 metadata:
